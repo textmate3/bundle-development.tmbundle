@@ -14,7 +14,7 @@ end
 def get_item_uid(item, extension)
   separator_file = BundleDir + item + '/separator.' + extension
   uid = false
-  if File.exists?(separator_file)
+  if File.exist?(separator_file)
     uid = Plist.load(separator_file)['uuid']
   else
     uid = (0..5).map{(0..5).map{rand(15).to_s(16) }.to_s.upcase}.join('-')
@@ -39,7 +39,7 @@ end
 order = []
 # 'Templates' => 'tmTemplate', 
 {'Preferences' => 'tmPreferences', 'Syntaxes' => 'tmLanguage', 'Snippets' => 'tmSnippet', 'Commands' => 'tmCommand', 'DragCommands' => 'tmDragCommand', 'Macros' => 'tmMacro'}.each do |(item, extension)|
-  next unless File.exists?(BundleDir + item)
+  next unless File.exist?(BundleDir + item)
   puts item
   uuid = get_item_uid(item, extension)
   order.delete(uuid)
