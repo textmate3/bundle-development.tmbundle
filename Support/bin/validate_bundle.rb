@@ -1,12 +1,10 @@
-#!/usr/bin/env ruby18 -w
+#!/usr/bin/env ruby -w
 
 require "yaml"
 require "find"
 
-$: << '/Applications/TextMate.app/Contents/SharedSupport/Support/lib/'
-$: << '/Library/Application Support/TextMate/Support/lib/'
-$: << '~/Library/Application Support/TextMate/Support/lib/'
-require "osx/plist"
+$LOAD_PATH << "#{ENV['TM_SUPPORT_PATH']}/private/vendor/plist/lib"
+require "plist"
 
 $legal_scopes, allowed_globals =
   YAML.load(DATA).values_at(*%w[legal_scopes allowed_globals])
@@ -77,12 +75,10 @@ ARGV.each do |bundle|
   # check for valid scope names in language grammars
   if options[:legal_scopes]
     Dir["Syntaxes/*.{tmLanguage,plist}"].each do |grammar|
-      open(grammar) do |io|
-        plist = OSX::PropertyList.load(io)
-        bundle_name = ARGV.size == 1 ? nil : File.split(bundle).last
-        visit_value plist['patterns'], bundle_name   if plist['patterns']
-        visit_value plist['repository'], bundle_name if plist['repository']
-      end
+      plist = Plist.parse_xml(grammar)
+      bundle_name = ARGV.size == 1 ? nil : File.split(bundle).last
+      visit_value plist['patterns'], bundle_name   if plist['patterns']
+      visit_value plist['repository'], bundle_name if plist['repository']
     end
   end
   
@@ -92,7 +88,7 @@ ARGV.each do |bundle|
       Find.find(dir) do |path|
         if File.file?(path) and
            File.extname(path) =~ /.*\.(tm[A-Z][a-zA-Z]+|plist)\Z/
-          plist = File.open(path) { |io| OSX::PropertyList.load(io) }
+          plist = Plist.parse_xml(path)
           uuid  = plist["uuid"]
           next if options[:white_list] and allowed_globals.include? uuid
           if plist["scope"].to_s.empty?

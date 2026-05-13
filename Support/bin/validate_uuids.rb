@@ -1,11 +1,9 @@
-#!/usr/bin/env ruby18 -wKU
+#!/usr/bin/env ruby -w
 
 require "find"
 
-$: << '/Applications/TextMate.app/Contents/SharedSupport/Support/lib/'
-$: << '/Library/Application Support/TextMate/Support/lib/'
-$: << '~/Library/Application Support/TextMate/Support/lib/'
-require "osx/plist"
+$LOAD_PATH << "#{ENV['TM_SUPPORT_PATH']}/private/vendor/plist/lib"
+require "plist"
 
 ROOT_DIRS = if ARGV.empty?
   %w[Bundles Review Disabled\ Bundles].map do |rel|
@@ -23,7 +21,7 @@ ROOT_DIRS.each do |root_dir|
     if File.file?(path) and
        File.extname(path) =~ /.*\.(tm[A-Z][a-zA-Z]+|plist)\Z/
       begin
-        plist = File.open(path) { |io| OSX::PropertyList.load(io) }
+        plist = Plist.parse_xml(path)
         if uuid = plist["uuid"]
           uuids[uuid] << path
         else
