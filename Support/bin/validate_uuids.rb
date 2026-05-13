@@ -2,8 +2,7 @@
 
 require "find"
 
-$LOAD_PATH << "#{ENV['TM_SUPPORT_PATH']}/private/vendor/plist/lib"
-require "plist"
+require "#{ENV['TM_SUPPORT_PATH']}/private/plist"
 
 ROOT_DIRS = if ARGV.empty?
   %w[Bundles Review Disabled\ Bundles].map do |rel|
@@ -21,7 +20,7 @@ ROOT_DIRS.each do |root_dir|
     if File.file?(path) and
        File.extname(path) =~ /.*\.(tm[A-Z][a-zA-Z]+|plist)\Z/
       begin
-        plist = Plist.parse_xml(path)
+        plist = Plist.load(path)
         if uuid = plist["uuid"]
           uuids[uuid] << path
         else

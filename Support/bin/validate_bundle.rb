@@ -3,8 +3,7 @@
 require "yaml"
 require "find"
 
-$LOAD_PATH << "#{ENV['TM_SUPPORT_PATH']}/private/vendor/plist/lib"
-require "plist"
+require "#{ENV['TM_SUPPORT_PATH']}/private/plist"
 
 $legal_scopes, allowed_globals =
   YAML.load(DATA).values_at(*%w[legal_scopes allowed_globals])
@@ -75,7 +74,7 @@ ARGV.each do |bundle|
   # check for valid scope names in language grammars
   if options[:legal_scopes]
     Dir["Syntaxes/*.{tmLanguage,plist}"].each do |grammar|
-      plist = Plist.parse_xml(grammar)
+      plist = Plist.load(grammar)
       bundle_name = ARGV.size == 1 ? nil : File.split(bundle).last
       visit_value plist['patterns'], bundle_name   if plist['patterns']
       visit_value plist['repository'], bundle_name if plist['repository']
@@ -88,7 +87,7 @@ ARGV.each do |bundle|
       Find.find(dir) do |path|
         if File.file?(path) and
            File.extname(path) =~ /.*\.(tm[A-Z][a-zA-Z]+|plist)\Z/
-          plist = Plist.parse_xml(path)
+          plist = Plist.load(path)
           uuid  = plist["uuid"]
           next if options[:white_list] and allowed_globals.include? uuid
           if plist["scope"].to_s.empty?
