@@ -2,6 +2,7 @@
 
 $LOAD_PATH << "#{ENV['TM_SUPPORT_PATH']}/lib"
 require 'escape'
+require 'securerandom'
 require "#{ENV['TM_SUPPORT_PATH']}/private/plist"
 
 BundleDir = Dir.pwd + '/'
@@ -17,7 +18,7 @@ def get_item_uid(item, extension)
   if File.exist?(separator_file)
     uid = Plist.load(separator_file)['uuid']
   else
-    uid = (0..5).map{(0..5).map{rand(15).to_s(16) }.to_s.upcase}.join('-')
+    uid = SecureRandom.uuid.upcase
     File.open(BundleDir + item + '/separator.' + extension, 'w') do |separator|
       separator << <<-HTML
       <?xml version="1.0" encoding="UTF-8"?>
@@ -52,4 +53,5 @@ info['ordering'] = order
 File.open(BundleDir + 'info.plist', 'w') do |info_file|
   info_file << info.to_plist
 end
-`osascript -e 'tell app "TextMate" to reload bundles'`
+# TextMate's BundlesManager watches bundle dirs via FSEvents and reloads
+# automatically when files change — no explicit reload call needed.
