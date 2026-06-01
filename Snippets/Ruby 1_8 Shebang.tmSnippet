@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>#!/usr/bin/env ruby18 -wKU
+	<string>#!/usr/bin/env ruby -w
 </string>
 	<key>name</key>
 	<string>Ruby 1.8 Shebang</string>

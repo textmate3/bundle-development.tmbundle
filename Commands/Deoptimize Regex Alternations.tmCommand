@@ -7,7 +7,7 @@
 	<key>bundleUUID</key>
 	<string>3CC1A984-EF93-4011-ADDC-FE2E10C6FB23</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby18
+	<string>#!/usr/bin/env ruby
 #
 #  regexp_to_list.rb
 #  Created by Hans-Jörg Bibiko on 2008-09-22.
